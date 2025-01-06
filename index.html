@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barcode & QR Code Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+      /* Gaya Umum */
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9; /* Warna background lembut */
+        color: #333; /* Warna teks */
+        text-align: center;
+        background-image: url("1.jpg"), url("2.jpg"), url("3.jpg"),
+          url("foto4.jpg");
+        background-size: 25%; /* Ukuran gambar diubah agar kecil dan merata */
+        background-position: top left, top right, bottom left, bottom right;
+        background-repeat: repeat; /* Gambar akan terulang untuk mengisi seluruh layar */
+      }
+
+      h1 {
+        color: #4caf50; /* Warna hijau untuk judul */
+        margin-top: 20px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background-color: #fff; /* Warna background kotak kontainer */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan */
+        border-radius: 10px; /* Membuat sudut membulat */
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 16px;
+        border: 1px solid #ddd; /* Warna border ringan */
+        border-radius: 5px; /* Membulatkan tepi input */
+        box-sizing: border-box;
+      }
+
+      input[type="text"]:focus {
+        border-color: #4caf50; /* Warna hijau saat fokus */
+        outline: none;
+      }
+
+      button {
+        padding: 12px 20px;
+        margin: 10px 5px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .output {
+        margin-top: 20px;
+      }
+
+      .output h3 {
+        color: #4caf50;
+        margin-bottom: 10px;
+      }
+
+      .output div {
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fafafa;
+        margin-bottom: 20px;
+      }
+
+      canvas,
+      img,
+      svg {
+        margin: 10px 0;
+        max-width: 100%;
+      }
+
+      .barcode-caption {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: -5px; /* Kurangi jarak antara barcode dan teks */
+        color: #555; /* Warna teks lebih halus */
+      }
+
+      footer {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #999;
+      }
+
+      footer a {
+        color: #4caf50;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsif untuk layar lebih kecil */
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        input[type="text"] {
+          font-size: 14px;
+          padding: 10px;
+        }
+
+        button {
+          padding: 10px 18px;
+          font-size: 14px;
+        }
+
+        footer {
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 20px;
+        }
+
+        input[type="text"] {
+          font-size: 12px;
+          padding: 8px;
+        }
+
+        button {
+          padding: 8px 16px;
+          font-size: 12px;
+        }
+
+        footer {
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Barcode & QR Code Generator</h1>
+      <p>Masukkan link, nama mahasiswa, dan NIM:</p>
+      <input
+        type="text"
+        id="inputLink"
+        placeholder="Masukkan link (contoh: https://example.com)"
+      />
+      <input
+        type="text"
+        id="namaMahasiswa"
+        placeholder="Masukkan nama mahasiswa"
+      />
+      <input type="text" id="nimMahasiswa" placeholder="Masukkan NIM" />
+      <button onclick="generateBarcode()">Generate Barcode</button>
+      <button onclick="generateQRCode()">Generate QR Code</button>
+
+      <div class="output">
+        <h3>Hasil Barcode:</h3>
+        <div id="barcodeContainer">
+          <svg id="barcode"></svg>
+          <p id="barcodeCaption" class="barcode-caption"></p>
+        </div>
+
+        <h3>Hasil QR Code:</h3>
+        <div id="qrcode"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 <a href="#">Chae</a>. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      function generateBarcode() {
+        const inputLink = document.getElementById("inputLink").value.trim();
+        const namaMahasiswa = document
+          .getElementById("namaMahasiswa")
+          .value.trim();
+        const nimMahasiswa = document
+          .getElementById("nimMahasiswa")
+          .value.trim();
+        const barcode = document.getElementById("barcode");
+        const barcodeCaption = document.getElementById("barcodeCaption");
+
+        if (!inputLink) {
+          alert("Silakan masukkan link terlebih dahulu!");
+          return;
+        }
+        if (!namaMahasiswa || !nimMahasiswa) {
+          alert("Silakan masukkan nama dan NIM mahasiswa!");
+          return;
+        }
+
+        // Reset SVG dan teks keterangan sebelumnya
+        barcode.innerHTML = "";
+        barcodeCaption.textContent = "";
+
+        // Membuat barcode dengan JsBarcode
+        JsBarcode(barcode, inputLink, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 1.5, // Lebar setiap garis
+          height: 70, // Tinggi barcode
+          displayValue: false, // Tidak menampilkan teks bawaan
+          margin: 10, // Margin di sekitar barcode
+        });
+
+        // Tambahkan keterangan manual di bawah barcode
+        barcodeCaption.textContent = `${namaMahasiswa} (${nimMahasiswa})`;
+      }
+
+      function generateQRCode() {
+        const inputLink = document.getElementById("inputLink").value.trim();
+        const qrCodeContainer = document.getElementById("qrcode");
+
+        if (!inputLink) {
+          alert("Silakan masukkan link terlebih dahulu!");
+          return;
+        }
+
+        // Kosongkan hasil QR Code sebelumnya
+        qrCodeContainer.innerHTML = "";
+
+        // Membuat QR Code ke dalam elemen div
+        QRCode.toDataURL(
+          inputLink,
+          {
+            width: 200,
+            color: {
+              dark: "#000000",
+              light: "#ffffff",
+            },
+          },
+          function (err, url) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+
+            // Menambahkan QR code sebagai img ke dalam div
+            const img = document.createElement("img");
+            img.src = url;
+            qrCodeContainer.appendChild(img);
+          }
+        );
+      }
+    </script>
+  </body>
+</html>
