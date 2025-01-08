@@ -15,7 +15,7 @@
         background-color: #f4f4f9; /* Warna background lembut */
         color: #333; /* Warna teks */
         text-align: center;
-        background-image: url("1.jpg"), url("2.jpg"), url("3.jpg"),
+        background-image: url("4.jpg"), url("4.jpg"), url("4.jpg"),
           url("foto4.jpg");
         background-size: 25%; /* Ukuran gambar diubah agar kecil dan merata */
         background-position: top left, top right, bottom left, bottom right;
@@ -102,11 +102,11 @@
       footer {
         margin-top: 30px;
         font-size: 14px;
-        color: #999;
+        color: #000000;
       }
 
       footer a {
-        color: #4caf50;
+        color: #000000;
         text-decoration: none;
       }
 
@@ -167,14 +167,18 @@
       <input
         type="text"
         id="inputLink"
-        placeholder="Masukkan link (contoh: https://example.com)"
+        placeholder="Masukkan link (contoh: https://www.google.com)"
       />
       <input
         type="text"
         id="namaMahasiswa"
-        placeholder="Masukkan nama mahasiswa"
+        placeholder="Silahkan Masukan Nama Anda"
       />
-      <input type="text" id="nimMahasiswa" placeholder="Masukkan NIM" />
+      <input
+        type="text"
+        id="nimMahasiswa"
+        placeholder="Silahkan Masukan NIM Anda"
+      />
       <button onclick="generateBarcode()">Generate Barcode</button>
       <button onclick="generateQRCode()">Generate QR Code</button>
 
@@ -195,7 +199,7 @@
     </footer>
 
     <script>
-      function generateBarcode() {
+      function generateQRCode() {
         const inputLink = document.getElementById("inputLink").value.trim();
         const namaMahasiswa = document
           .getElementById("namaMahasiswa")
@@ -203,8 +207,7 @@
         const nimMahasiswa = document
           .getElementById("nimMahasiswa")
           .value.trim();
-        const barcode = document.getElementById("barcode");
-        const barcodeCaption = document.getElementById("barcodeCaption");
+        const qrCodeContainer = document.getElementById("qrcode");
 
         if (!inputLink) {
           alert("Silakan masukkan link terlebih dahulu!");
@@ -212,33 +215,6 @@
         }
         if (!namaMahasiswa || !nimMahasiswa) {
           alert("Silakan masukkan nama dan NIM mahasiswa!");
-          return;
-        }
-
-        // Reset SVG dan teks keterangan sebelumnya
-        barcode.innerHTML = "";
-        barcodeCaption.textContent = "";
-
-        // Membuat barcode dengan JsBarcode
-        JsBarcode(barcode, inputLink, {
-          format: "CODE128",
-          lineColor: "#000",
-          width: 1.5, // Lebar setiap garis
-          height: 70, // Tinggi barcode
-          displayValue: false, // Tidak menampilkan teks bawaan
-          margin: 10, // Margin di sekitar barcode
-        });
-
-        // Tambahkan keterangan manual di bawah barcode
-        barcodeCaption.textContent = `${namaMahasiswa} (${nimMahasiswa})`;
-      }
-
-      function generateQRCode() {
-        const inputLink = document.getElementById("inputLink").value.trim();
-        const qrCodeContainer = document.getElementById("qrcode");
-
-        if (!inputLink) {
-          alert("Silakan masukkan link terlebih dahulu!");
           return;
         }
 
@@ -265,6 +241,12 @@
             const img = document.createElement("img");
             img.src = url;
             qrCodeContainer.appendChild(img);
+
+            // Menambahkan nama dan NIM di bawah QR Code
+            const qrCaption = document.createElement("p");
+            qrCaption.textContent = `${namaMahasiswa} (${nimMahasiswa})`;
+            qrCaption.className = "barcode-caption";
+            qrCodeContainer.appendChild(qrCaption);
           }
         );
       }
